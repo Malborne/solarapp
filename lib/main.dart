@@ -7,7 +7,9 @@ import 'package:solar/services/weather.dart';
 void main() => runApp(MultiProvider(
      providers: [
        FutureProvider(create: (_)=>WeatherModel().getTempFromWeatherData(), initialData: 0),
-       FutureProvider(create: (_)=>NordPool().getAll(), initialData: null)
+       FutureProvider(create: (_)=>NordPool().getAll(), initialData: null),
+       //TODO: Add isOnline her to the provider list
+       // ChangeNotifierProvider(create: (_){}, initialData: false),
 
      ],
   child: MyApp(),

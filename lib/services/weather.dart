@@ -16,11 +16,15 @@ class WeatherModel {
 
   Future<dynamic> getLocationWeather() async {
     Location myLocation = Location();
-    List<double> latLong = await myLocation.getCurrentLocation();
-    if (latLong[2]==0)
-    {return null;}
-    double latitude = latLong[0];
-    double longitude = latLong[1];
+    Map<String,dynamic> currentLocation = await myLocation.getCurrentLocation();
+    // print('Location found: ${currentLocation['locationFound']}');
+    if (!currentLocation['locationFound'])
+    {
+      //TODO: handle this in a better way
+      return null;
+    }
+    double latitude = currentLocation['Latitude'];
+    double longitude = currentLocation['Longitude'];
     print('Latitude: $latitude');
     print('Longitude: $longitude');
 
