@@ -12,8 +12,10 @@ class NetworkHelper {
     if (response.statusCode == 200) {
       // print(jsonDecode(response.body));
       return jsonDecode(response.body);
-    } else
+    } else {
       print(response.statusCode);
+      throw Exception('500 Internal Server Error ');
+    }
   }
 }
 

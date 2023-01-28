@@ -24,18 +24,18 @@ class _LoadingScreenState extends State<LoadingScreen> {
   final NetworkConnectivity _networkConnectivity = NetworkConnectivity.instance;
   String string = '';
   WeatherModel weather = WeatherModel();
-  final int timeout = 5; //timeout allowed in seconds (5 seconds)
-  late Duration timeoutDuration =  Duration(seconds: timeout);
+  final int timeout = 10; //timeout allowed in seconds (5 seconds)
+  late Duration timeoutDuration = Duration(seconds: timeout);
 
   void getData() {
     // try {
-      WeatherModel()
-          .getLocationWeather()
-          .then((value) {
-            setState(() {
-              weatherLoaded = true;
-              weatherData = value;
-            });
+    WeatherModel()
+        .getLocationWeather()
+        .then((value) {
+          setState(() {
+            weatherLoaded = true;
+            weatherData = value;
+          });
             print('weather Data received: $weatherLoaded');
           })
           .timeout(timeoutDuration)
@@ -123,17 +123,19 @@ class _LoadingScreenState extends State<LoadingScreen> {
     // }
 
     NordPool()
-        .getAll(areas: ['Oslo'])
+        .getAll(area: 'Oslo')
         .then((value) {
           setState(() {
             priceLoaded = true;
             priceData = value;
           });
           print('Price Data received: $priceLoaded');
+      // print(priceData['Hours']);
         })
         .timeout(timeoutDuration)
         .onError((error, stackTrace) {
-          print(error);
+      print(error);
+          print(stackTrace);
           setState(() {
             priceLoaded = false;
             priceData = null;

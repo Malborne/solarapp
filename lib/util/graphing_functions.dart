@@ -1,55 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
- List<Widget Function(double, TitleMeta)?> titleFunctions = [dailyTitles,weeklyTitles,monthlyTitles,annualTitles,dailyTitles];
-
+List<Widget Function(double, TitleMeta)?> titleFunctions = [
+  dailyTitles,
+  weeklyTitles2,
+  monthlyTitles,
+  annualTitles,
+  dailyTitles
+];
 
 Widget annualTitles(double value, TitleMeta meta) {
   const style = TextStyle(
     color: Colors.white,
     fontSize: 10,
   );
-  String text;
-  switch (value.toInt()) {
-    case 0:
-      text = 'JAN';
-      break;
-    case 1:
-      text = 'FEB';
-      break;
-    case 2:
-      text = 'MAR';
-      break;
-    case 3:
-      text = 'APR';
-      break;
-    case 4:
-      text = 'MAY';
-      break;
-    case 5:
-      text = 'JUN';
-      break;
-    case 6:
-      text = 'JUL';
-      break;
-    case 7:
-      text = 'AUG';
-      break;
-    case 8:
-      text = 'SEP';
-      break;
-    case 9:
-      text = 'OCT';
-      break;
-    case 10:
-      text = 'NOV';
-      break;
-    case 11:
-      text = 'DEC';
-      break;
-    default:
-      text = '';
-  }
+  String text = getMonthNames(value.toInt() + 1);
   return SideTitleWidget(
     axisSide: meta.axisSide,
     child: Padding(
@@ -115,12 +80,56 @@ Widget weeklyTitles(double value, TitleMeta meta) {
   );
 }
 
+Widget weeklyTitles2(double value, TitleMeta meta) {
+  const style = TextStyle(
+    color: Colors.white,
+    fontSize: 10,
+  );
+  String text;
+  DateTime lastWeek = DateTime.now().subtract(const Duration(days: 5));
+  int val = (value.toInt() + lastWeek.weekday) % 7;
+  switch (val) {
+    case 0:
+      text = 'SUN';
+      break;
+    case 1:
+      text = 'MON';
+      break;
+    case 2:
+      text = 'TUE';
+      break;
+    case 3:
+      text = 'WED';
+      break;
+    case 4:
+      text = 'THU';
+      break;
+    case 5:
+      text = 'FRI';
+      break;
+    case 6:
+      text = 'SAT';
+      break;
+    default:
+      text = '';
+  }
+  return SideTitleWidget(
+    axisSide: meta.axisSide,
+    child: Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Text(text, style: style),
+    ),
+  );
+}
+
 Widget dailyTitles(double value, TitleMeta meta) {
   const style = TextStyle(
     color: Colors.white,
     fontSize: 10,
   );
-  String text = (value.toInt())%6==0||(value.toInt())==23?'${(value.toInt())}:00':'';
+  String text = (value.toInt()) % 6 == 0 || (value.toInt()) == 23
+      ? '${(value.toInt())}:00'
+      : '';
 
   return SideTitleWidget(
     axisSide: meta.axisSide,
@@ -155,7 +164,7 @@ String xTitle (int index){
 
 int weekNum() {
   final now = DateTime.now();
-  final firstJan  =  DateTime(now.year, 1, 1);
+  final firstJan = DateTime(now.year, 1, 1);
   return (now.difference(firstJan).inDays / 7).ceil();
 }
 
@@ -163,4 +172,52 @@ int roundDown(int number, int factor) {
   if (factor < 1) throw RangeError.range(factor, 1, null, "factor");
   return number - (number % factor);
 }
+
 int roundUp(int number, int factor) => roundDown(number + (factor - 1), factor);
+
+String getKeyFromIndex(int index) {
+  switch (index) {
+    case 0:
+      return 'Hours';
+    case 1:
+    case 2:
+      return 'Days';
+    case 3:
+      return 'Months';
+    case 4:
+      return 'Tomorrow';
+    default:
+      return 'Hours';
+  }
+}
+
+String getMonthNames(int month) {
+  switch (month) {
+    case 1:
+      return 'JAN';
+    case 2:
+      return 'FEB';
+    case 3:
+      return 'MAR';
+    case 4:
+      return 'APR';
+    case 5:
+      return 'MAY';
+    case 6:
+      return 'JUN';
+    case 7:
+      return 'JUL';
+    case 8:
+      return 'AUG';
+    case 9:
+      return 'SEP';
+    case 10:
+      return 'OCT';
+    case 11:
+      return 'NOV';
+    case 12:
+      return 'DEC';
+    default:
+      return '';
+  }
+}

@@ -59,7 +59,10 @@ class IndicationCircle extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 20),
                   child: Text(
                     mainText,
-             style: Theme.of(context).textTheme.titleLarge,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontSize: 18),
                   ),
                 ),
                 Padding(
