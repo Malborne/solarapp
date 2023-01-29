@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:solar/components/legend_widget.dart';
-import 'package:solar/components/oval_button.dart';
-import 'package:solar/components/reusable_bar.dart';
 import 'package:solar/util/generate_bar_data.dart';
 import 'package:solar/util/graphing_functions.dart';
 import 'package:solar/components/touch_bar.dart';
@@ -32,9 +30,11 @@ class _ProductionTabState extends State<ProductionTab> {
 
   @override
   Widget build(BuildContext context) {
+    var orientation = MediaQuery.of(context).orientation;
+
     return SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+      child: ListView(
+        // mainAxisAlignment: MainAxisAlignment.start,
 
         children: [
           Padding(
@@ -60,7 +60,7 @@ class _ProductionTabState extends State<ProductionTab> {
                 ),
                 const SizedBox(height: 14),
                 AspectRatio(
-                  aspectRatio: 1,
+                  aspectRatio: orientation == Orientation.portrait ? 1 : 2.5,
                   child: BarChart(
                     BarChartData(
                       alignment: BarChartAlignment.spaceBetween,
@@ -70,7 +70,7 @@ class _ProductionTabState extends State<ProductionTab> {
                             showTitles: true,
                             interval: 2,
                             // getTitlesWidget: bottomTitles,
-                            reservedSize: 16,
+                            reservedSize: 20,
                           ),
                         ),
                         rightTitles: AxisTitles(),
@@ -82,6 +82,7 @@ class _ProductionTabState extends State<ProductionTab> {
                           ),
                           axisNameSize: 25,
                           sideTitles: SideTitles(
+                            reservedSize: 36,
                             // interval: 10,
                             showTitles: true,
                             getTitlesWidget: titleFunctions[_index],
@@ -105,62 +106,20 @@ class _ProductionTabState extends State<ProductionTab> {
               ],
             ),
           ),
-          // ReusableBar(
-          //   color: Colors.black12.withOpacity(0.1),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-          //     // crossAxisAlignment: CrossAxisAlignment.stretch,
-          //     children:  [
-          //       Padding(
-          //         padding: const EdgeInsets.symmetric(horizontal: 8),
-          //         child: OvalButton(
-          //           text: 'Day',
-          //           onPressed: ()=> setState(() {
-          //             _index = 0;
-          //           }),
-          //         ),
-          //       ),
-          //       Padding(
-          //         padding: const EdgeInsets.symmetric(horizontal: 8),
-          //         child: OvalButton(
-          //           text: 'Week',
-          //           onPressed: ()=> setState(() {
-          //             _index = 1;
-          //           }),
-          //         ),
-          //       ),
-          //       Padding(
-          //         padding: const EdgeInsets.symmetric(horizontal: 8),
-          //         child: OvalButton(
-          //           text: 'Month',
-          //           onPressed: ()=> setState(() {
-          //             _index = 2;
-          //           }),
-          //         ),
-          //       ),
-          //       Padding(
-          //         padding: const EdgeInsets.symmetric(horizontal: 8),
-          //         child: OvalButton(
-          //           text: 'Year',
-          //           onPressed: ()=> setState(() {
-          //             _index = 3;
-          //           }),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          TouchBar(
-            color: Colors.grey.shade800.withOpacity(0.1),
-            count: 4,
-            screenWidth: MediaQuery.of(context).size.width,
-            keys: [GlobalKey(),GlobalKey(),GlobalKey(),GlobalKey()],
-            names: ['Day','Week','Month','Year'],
-            stateChanged: (index){
-              setState(() {
-                _index = index;
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: TouchBar(
+              color: Colors.grey.shade800.withOpacity(0.1),
+              count: 4,
+              screenWidth: MediaQuery.of(context).size.width,
+              keys: [GlobalKey(), GlobalKey(), GlobalKey(), GlobalKey()],
+              names: ['Day', 'Week', 'Month', 'Year'],
+              stateChanged: (index) {
+                setState(() {
+                  _index = index;
                 });
               },
+            ),
           ),
         ],
       ),

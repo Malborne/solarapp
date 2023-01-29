@@ -22,9 +22,16 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
      _widgetOptions = <Widget>[
-      Center(child: HomePage(weatherData: widget.weatherData)),
-       Center(child: SolarPage(priceData: widget.priceData,)),
-       Center(child: EnergyPage()),
+      Center(
+          child: HomePage(
+        weatherData: widget.weatherData,
+        priceData: widget.priceData,
+      )),
+      Center(
+          child: SolarPage(
+        priceData: widget.priceData,
+      )),
+      const Center(child: EnergyPage()),
       const Text(
         'Settings',
         style: optionStyle,

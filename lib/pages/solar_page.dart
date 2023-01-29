@@ -107,22 +107,23 @@ class _SolarPageState extends State<SolarPage> {
 
   @override
   Widget build(BuildContext context) {
+    var orientation = MediaQuery.of(context).orientation;
+
     return Scaffold(
         backgroundColor: Colors.black38,
         body: SafeArea(
-
-            child: Column(
-              children: [
-                Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Text(
-                        'Solar Energy Production',
-                        style: TextStyle(
+            child: ListView(
+          children: [
+            Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Text(
+                    'Solar Energy Production',
+                    style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -141,46 +142,46 @@ class _SolarPageState extends State<SolarPage> {
                               padding: const EdgeInsets.only(top: 20,bottom:5,left: 5,right: 5),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Current Price',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  // fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Text(
-                                '${priceToday.round()} €/MWh',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ],
+                                children: [
+                                  const Text(
+                                    'Current Price',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      // fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${priceToday.round()} €/MWh',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 5),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Price Tomorrow',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  // fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Text(
-                                '${priceTomorrow.round()} €/MWh',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ],
+                                children: [
+                                  const Text(
+                                    'Price Tomorrow',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      // fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${priceTomorrow.round()} €/MWh',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -191,18 +192,18 @@ class _SolarPageState extends State<SolarPage> {
                       ),
                       LegendsListWidget(
                         legends: [
-                      // Legend('Solar Production (kWh)', Colors.red),
-                      Legend('Price (€/MWh)', Colors.blue),
-                    ],
+                          // Legend('Solar Production (kWh)', Colors.red),
+                          Legend('Price (€/MWh)', Colors.blue),
+                        ],
                       ),
                       const SizedBox(height: 30),
                       AspectRatio(
-
-                        aspectRatio: 1.3,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: LineChart(
-                            LineChartData(
+                        aspectRatio:
+                        orientation == Orientation.portrait ? 1.3 : 3.5,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: LineChart(
+                        LineChartData(
                           minY: roundDown(minPrice.floor(), 10).toDouble(),
                           maxY: roundUp(maxPrice.floor(), 10).toDouble(),
                           lineTouchData: LineTouchData(enabled: true),
@@ -210,12 +211,12 @@ class _SolarPageState extends State<SolarPage> {
                             show: true,
                             rightTitles: AxisTitles(
                               sideTitles: SideTitles(
-                                  showTitles: false,
-                                  getTitlesWidget: rightAxisTitles,
-                                  reservedSize: 36),
-                            ),
-                            topTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false),
+                                      showTitles: false,
+                                      getTitlesWidget: rightAxisTitles,
+                                      reservedSize: 36),
+                                ),
+                                topTitles: AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
                                 ),
                                 bottomTitles: AxisTitles(
                                   axisNameSize: 25,
@@ -262,78 +263,84 @@ class _SolarPageState extends State<SolarPage> {
                               ],
                             ),
                             swapAnimationDuration: const Duration(milliseconds: 300),
-                          ),
-                        ),
                       ),
+                    ),
+                  ),
+                ]),
+            const SizedBox(
+              height: 15,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: TouchBar(
+                color: Colors.grey.shade800.withOpacity(0.1),
+                count: 5,
+                screenWidth: MediaQuery.of(context).size.width,
+                keys: [
+                  GlobalKey(),
+                  GlobalKey(),
+                  GlobalKey(),
+                  GlobalKey(),
+                  GlobalKey()
+                ],
+                names: const ['Day', 'Week', 'Month', 'Year', 'Tomorrow'],
+                stateChanged: (index) {
+                  setState(() {
+                    _index = index;
+                    isLoaded = false;
 
-                    ]
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
+                    // NordPool().getByIndex(index: index).then((priceData) {
+                    priceSpots = List.generate(xCount[_index], (index) {
+                      //TODO: make sure the index does not go out of range if you generate the wrong data
+                      var values = widget.priceData[getKeyFromIndex(_index)]
+                          ['areas']['Oslo']['values'];
+                      setState(() {
+                        maxPrice =
+                            (maxMin(values, xCount[_index])['max'] ?? 240) *
+                                convRatio;
+                        minPrice =
+                            (maxMin(values, xCount[_index])['min'] ?? 100) *
+                                convRatio;
+                      });
+                      // print('max Price: $maxPrice');
+                      // print('min Price: $minPrice');
+                      if (_index == 1 || _index == 3 || _index == 2) {
+                        //Week or year
+                        values = values
+                            .take(xCount[_index])
+                            .toList()
+                            .reversed
+                            .toList();
+                      }
+                      double value = values[index]['value'] *
+                          convRatio; //Convert from MWh/Eur to kWh/øre
 
-                TouchBar(
-                  color: Colors.grey.shade800.withOpacity(0.1),
-                  count: 5,
-                  screenWidth: MediaQuery.of(context).size.width,
-                  keys: [GlobalKey(),GlobalKey(),GlobalKey(),GlobalKey(),GlobalKey()],
-                  names: const ['Day','Week','Month','Year','Tomorrow'],
-                  stateChanged: (index){
-                    setState(() {
-                      _index = index;
-                      isLoaded = false;
-
-                  // NordPool().getByIndex(index: index).then((priceData) {
-                      priceSpots = List.generate(xCount[_index], (index) {
-                    //TODO: make sure the index does not go out of range if you generate the wrong data
-                    var values = widget.priceData[getKeyFromIndex(_index)]
-                        ['areas']['Oslo']['values'];
-                    setState(() {
-                      maxPrice =
-                          (maxMin(values, xCount[_index])['max'] ?? 240) *
-                              convRatio;
-                      minPrice =
-                          (maxMin(values, xCount[_index])['min'] ?? 100) *
-                              convRatio;
+                      setState(() {
+                        isLoaded = true;
+                      });
+                      return FlSpot(index.toDouble(), value);
                     });
-                    // print('max Price: $maxPrice');
-                    // print('min Price: $minPrice');
-                    if (_index == 1 || _index == 3 || _index == 2) {
-                      //Week or year
-                      values = values
-                          .take(xCount[_index])
-                          .toList()
-                          .reversed
-                          .toList();
-                    }
-                    double value = values[index]['value'] *
-                        convRatio; //Convert from MWh/Eur to kWh/øre
-
-                    setState(() {
-                      isLoaded = true;
+                    dummyData1 = List.generate(xCount[_index], (index) {
+                      double y2 = index * Random().nextDouble();
+                      // print('Original value $index: $y2');
+                      //Rescale the data to the fit the graph with the major axis on the left
+                      double spot = (y2 - 0) /
+                              (xCount[_index] - 0) *
+                              (maxPrice - minPrice) +
+                          minPrice;
+                      // (Y2 - minY2) / (maxY2 - minY2) * (maxY - minY) + minY
+                      return FlSpot(index.toDouble(), spot);
                     });
-                    return FlSpot(index.toDouble(), value);
+                    // });
+                    // priceSpots = List.generate(xCount[_index], (index) {
+                    //   return FlSpot(index.toDouble(), index * Random().nextDouble());
+                    // });
                   });
-                  dummyData1 = List.generate(xCount[_index], (index) {
-                    double y2 = index * Random().nextDouble();
-                    // print('Original value $index: $y2');
-                    //Rescale the data to the fit the graph with the major axis on the left
-                    double spot = (y2 - 0) /
-                            (xCount[_index] - 0) *
-                            (maxPrice - minPrice) +
-                        minPrice;
-                    // (Y2 - minY2) / (maxY2 - minY2) * (maxY - minY) + minY
-                    return FlSpot(index.toDouble(), spot);
-                  });
-                  // });
-                      // priceSpots = List.generate(xCount[_index], (index) {
-                  //   return FlSpot(index.toDouble(), index * Random().nextDouble());
-                  // });
-                });
-              },
+                },
+              ),
             ),
           ],
-        )));
+            )));
   }
 
   Widget rightAxisTitles(double value, TitleMeta meta) {

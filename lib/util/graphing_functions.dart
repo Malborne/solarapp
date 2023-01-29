@@ -86,7 +86,7 @@ Widget weeklyTitles2(double value, TitleMeta meta) {
     fontSize: 10,
   );
   String text;
-  DateTime lastWeek = DateTime.now().subtract(const Duration(days: 5));
+  DateTime lastWeek = DateTime.now().subtract(const Duration(days: 6));
   int val = (value.toInt() + lastWeek.weekday) % 7;
   switch (val) {
     case 0:

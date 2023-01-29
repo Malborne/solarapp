@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:solar/components/legend_widget.dart';
-import 'package:solar/components/touch_bar.dart';
 import 'package:solar/util/generate_bar_data.dart';
 import 'package:solar/util/graphing_functions.dart';
+import 'package:solar/components/touch_bar.dart';
+
 class ConsumptionTab extends StatefulWidget {
   const ConsumptionTab({Key? key}) : super(key: key);
 
@@ -30,9 +31,11 @@ class _ConsumptionTabState extends State<ConsumptionTab> {
 
   @override
   Widget build(BuildContext context) {
+    var orientation = MediaQuery.of(context).orientation;
+
     return SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+      child: ListView(
+        // mainAxisAlignment: MainAxisAlignment.start,
 
         children: [
           Padding(
@@ -58,7 +61,7 @@ class _ConsumptionTabState extends State<ConsumptionTab> {
                 ),
                 const SizedBox(height: 14),
                 AspectRatio(
-                  aspectRatio: 1,
+                  aspectRatio: orientation == Orientation.portrait ? 1 : 2.5,
                   child: BarChart(
                     BarChartData(
                       alignment: BarChartAlignment.spaceBetween,
@@ -68,14 +71,19 @@ class _ConsumptionTabState extends State<ConsumptionTab> {
                             showTitles: true,
                             interval: 2,
                             // getTitlesWidget: bottomTitles,
-                            reservedSize: 16,
+                            reservedSize: 20,
                           ),
                         ),
                         rightTitles: AxisTitles(),
                         topTitles: AxisTitles(),
                         bottomTitles: AxisTitles(
-                          axisNameWidget: Text(xTitle(_index)),
+                          axisNameWidget: Padding(
+                            padding: const EdgeInsets.only(top: 5),
+                            child: Text(xTitle(_index)),
+                          ),
+                          axisNameSize: 25,
                           sideTitles: SideTitles(
+                            reservedSize: 36,
                             // interval: 10,
                             showTitles: true,
                             getTitlesWidget: titleFunctions[_index],
@@ -83,7 +91,7 @@ class _ConsumptionTabState extends State<ConsumptionTab> {
                           ),
                         ),
                       ),
-                      barTouchData: BarTouchData(enabled: true),
+                      barTouchData: BarTouchData(enabled: false),
                       borderData: FlBorderData(show: false),
                       gridData: FlGridData(show: false),
                       barGroups: generateGroupDataList(
@@ -99,21 +107,23 @@ class _ConsumptionTabState extends State<ConsumptionTab> {
               ],
             ),
           ),
-          TouchBar(
-            color: Colors.grey.shade800.withOpacity(0.1),
-            count: 4,
-            screenWidth: MediaQuery.of(context).size.width,
-            keys: [GlobalKey(),GlobalKey(),GlobalKey(),GlobalKey()],
-            names: const ['Day','Week','Month','Year'],
-            stateChanged: (index){
-              setState(() {
-                _index = index;
-              });
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: TouchBar(
+              color: Colors.grey.shade800.withOpacity(0.1),
+              count: 4,
+              screenWidth: MediaQuery.of(context).size.width,
+              keys: [GlobalKey(), GlobalKey(), GlobalKey(), GlobalKey()],
+              names: ['Day', 'Week', 'Month', 'Year'],
+              stateChanged: (index) {
+                setState(() {
+                  _index = index;
+                });
+              },
+            ),
           ),
         ],
       ),
     );
   }
-  }
-
+}

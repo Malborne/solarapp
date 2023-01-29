@@ -19,15 +19,17 @@ void main() => runApp(MultiProvider(
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static const String _title = 'Flutter Code Sample';
+  static const String _title = 'Solar App';
 
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight
     ]);
-    return  MaterialApp(
+    return MaterialApp(
       title: _title,
       theme: ThemeData.dark().copyWith(
         primaryColorDark: Colors.purple,

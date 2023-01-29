@@ -1,13 +1,13 @@
-
 import 'package:flutter/material.dart';
 import '../components/indication_circle.dart';
-import '../components/location_dialog.dart';
-import '../services/weather.dart';
-import '../services/location.dart';
+import 'package:timer_builder/timer_builder.dart';
 
 class HomePage extends StatefulWidget {
-   final weatherData;
-  const HomePage({super.key, required this.weatherData});
+  final weatherData;
+  final priceData;
+
+  const HomePage(
+      {super.key, required this.weatherData, required this.priceData});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -15,142 +15,139 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late double temperature;
-@override
-  void  initState()  {
+  late double priceRealTime;
+  int currentHour = DateTime.now().hour;
+
+  @override
+  void initState() {
     // TODO: implement initState
     super.initState();
 
-    updateUI(widget.weatherData);
+    updateUI(widget.weatherData, widget.priceData);
   }
 
+  void updateUI(weatherData, priceData) {
+    if (weatherData == null) {
+      temperature = 0;
+      return;
+    }
+    if (priceData == null) {
+      priceRealTime = 0;
+      return;
+    }
 
-void updateUI(weatherData) {
-  if (weatherData == null) {
-
-    temperature = 0;
-    return;
-  }
-  setState(() {
-    temperature = weatherData['current_weather']['temperature'];
-    // temperature = 20;
-  });
+    setState(() {
+      temperature = weatherData['current_weather']['temperature'];
+      priceRealTime = widget.priceData['Hours']['areas']['Oslo']['values']
+          [currentHour]['value'];
+      // temperature = 20;
+    });
 //    print(temperature.toStringAsFixed(1));
+  }
 
-}
-
-
-@override
+  @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    var orientation = MediaQuery.of(context).orientation;
+    var diameter = (orientation == Orientation.portrait
+            ? MediaQuery.of(context).size.width
+            : MediaQuery.of(context).size.height) /
+        3.5;
+    return Scaffold(
       backgroundColor: Colors.black38,
       body: SafeArea(
         child: Center(
-
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          heightFactor: 1.3,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing:
+                orientation == Orientation.portrait ? diameter / 6 : diameter,
+            runSpacing: 30,
             children: [
-
-              Row(
-
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children:  [
               IndicationCircle(
 // onPressed: (){},
                 successColor: Colors.red,
                 failColor: Colors.brown,
-                diameter: MediaQuery.of(context).size.width/3.5,
+                diameter: diameter,
                 successPercentage: 80,
                 outlineWidth: 4,
                 mainText: '2359 W',
                 subText: 'Production',
               ),
-              IndicationCircle(
+              TimerBuilder.periodic(const Duration(hours: 1),
+                  alignment: const Duration(hours: 1), builder: (context) {
+                currentHour = DateTime.now().hour;
+                priceRealTime = widget.priceData['Hours']['areas']['Oslo']
+                    ['values'][currentHour]['value'];
+
+                return IndicationCircle(
 // onPressed: (){},
-                successColor: Colors.green,
-                failColor: Colors.brown,
-                diameter: MediaQuery.of(context).size.width/3.5,
-                successPercentage: 60,
-                outlineWidth: 4,
-                mainText: '120 øre/kW',
-                subText: '20:00 - 21:00',
-              ),
+                  successColor: Colors.green,
+                  failColor: Colors.brown,
+                  diameter: diameter,
+                  successPercentage: priceRealTime / 200 * 100,
+                  outlineWidth: 4,
+                  mainText: '${priceRealTime.toStringAsFixed(1)} €/MWh',
+                  subText:
+                      '${currentHour.toString().padLeft(2, '0')}:00 - ${((currentHour + 1) % 24).toString().padLeft(2, '0')}:00',
+                );
+              }),
               IndicationCircle(
 // onPressed: (){},
                 successColor: Colors.blue,
                 failColor: Colors.brown,
-                diameter: MediaQuery.of(context).size.width/3.5,
-                successPercentage: temperature*2,
+                diameter: diameter,
+                successPercentage: temperature * 2,
                 outlineWidth: 4,
-                mainText: widget.weatherData == null?'-- °C':'$temperature °C',
+                mainText:
+                    widget.weatherData == null ? '-- °C' : '$temperature °C',
                 subText: 'Temperature',
               ),
 
-  ],
-),
-              Row(
-
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children:  [
-                  IndicationCircle(
+              IndicationCircle(
 // onPressed: (){},
-                    successColor: Colors.yellow.shade800,
-                    failColor: Colors.brown,
-                    diameter: MediaQuery.of(context).size.width/3.5,
-                    successPercentage: 80,
-                    outlineWidth: 4,
-                    mainText: '5000 kWh',
-                    subText: 'Consumption',
-                  ),
-                  IndicationCircle(
-// onPressed: (){},
-                    successColor: Colors.teal.shade800,
-                    failColor: Colors.brown,
-                    diameter: MediaQuery.of(context).size.width/3.5,
-                    successPercentage: 60,
-                    outlineWidth: 4,
-                    mainText: '7350 kWh',
-                    subText: 'PV Yield',
-                  ),
-                  IndicationCircle(
-// onPressed: (){},
-                    successColor: Colors.deepOrange.shade600,
-                    failColor: Colors.brown,
-                    diameter: MediaQuery.of(context).size.width/3.5,
-                    successPercentage: 90,
-                    outlineWidth: 4,
-                    mainText: '1820 NOK',
-                    subText: 'Money Saved',
-                  ),
-
-                ],
+                successColor: Colors.yellow.shade800,
+                failColor: Colors.brown,
+                diameter: diameter,
+                successPercentage: 80,
+                outlineWidth: 4,
+                mainText: '5000 kWh',
+                subText: 'Consumption',
               ),
-              Row(
-
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children:  [
-                  IndicationCircle(
+              IndicationCircle(
 // onPressed: (){},
-                    successColor: Colors.purple,
-                    failColor: Colors.brown,
-                    diameter: MediaQuery.of(context).size.width/3.5,
-                    successPercentage: 60,
-                    outlineWidth: 4,
-                    mainText: '4318 NOK',
-                    subText: 'Total Cost',
-                  ),
-
-
-
-                ],
+                successColor: Colors.teal.shade800,
+                failColor: Colors.brown,
+                diameter: diameter,
+                successPercentage: 60,
+                outlineWidth: 4,
+                mainText: '7350 kWh',
+                subText: 'PV Yield',
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height*0.1,
-                width: double.infinity,
+              IndicationCircle(
+// onPressed: (){},
+                successColor: Colors.deepOrange.shade600,
+                failColor: Colors.brown,
+                diameter: diameter,
+                successPercentage: 90,
+                outlineWidth: 4,
+                mainText: '1820 NOK',
+                subText: 'Money Saved',
               ),
+              IndicationCircle(
+// onPressed: (){},
+                successColor: Colors.purple,
+                failColor: Colors.brown,
+                diameter: diameter,
+                successPercentage: 60,
+                outlineWidth: 4,
+                mainText: '4318 NOK',
+                subText: 'Total Cost',
+              ),
+              // SizedBox(
+              //   height: (orientation==Orientation.portrait?MediaQuery.of(context).size.height:MediaQuery.of(context).size.width) * 0.1,
+              //   width: double.infinity,
+              // ),
             ],
           ),
         ),
@@ -158,4 +155,3 @@ void updateUI(weatherData) {
     );
   }
 }
-
